@@ -1,66 +1,110 @@
 #include <stdio.h>
 #include <limits.h>
 #include <string.h>
- 
+#include <stdlib.h>
+
 // Number of vertices in the graph
 #define Vertices 9
 
 // Function Prototypes
-void dijkstra(const char *colors[Vertices][Vertices], int graph[Vertices][Vertices], int src);
+void dijkstra(char *colors[Vertices][Vertices], int graph[Vertices][Vertices], int src);
 int minDistance(int dist[], int sptSet[]);
-void printPath(int parent[], int j, const char *colors[Vertices][Vertices], int graph[Vertices][Vertices]);
-int printSolution(int dist[], int n, int parent[], int src, int dest, const char *colors[Vertices][Vertices], int graph[Vertices][Vertices]);
+void printPath(int parent[], int j, char *colors[Vertices][Vertices], int graph[Vertices][Vertices]);
+void printSolution(int dist[], int n, int parent[], int src, int dest, char *colors[Vertices][Vertices], int graph[Vertices][Vertices]);
+
+//const char* parseColors()
+//{
+//  const char *colors[Vertices][Vertices];
+//
+//
+//
+//  return colors;
+//}
 
 struct Stations
 {
-	int id;
-	char name[50];
-	char color[10];
-	//char color2[10];
+    int id;
+    char name[50];
 };
 
 int main()
 {
-	//struct Stations Station0, Station1, Station2, Station3, Station4, Station5, Station6, Station7, Station8;
+    int graph[Vertices][Vertices];
 
+    //   \/\/  Make Function Somehow \/\/
+    char buffer[1024];  
+    char *record, *line;
+    int i = 0;
+    int j = 0;
+    FILE *fstream = fopen("Weights.dat", "r");
 
-	//Station0.id = 0;
-	//strcpy(Station0.name, "Station0");
-	
+    // Check for successful opening of file
+    if (fstream == NULL)
+    {
+        printf("\n file opening failed\n");
+        return -1;
+    }
+        
+    // Get a single line from the file and parse it into tokens
+    // and place the contents in a 2d array of strings.
+    while ((line = fgets(buffer, sizeof(buffer), fstream)) != NULL)
+    {
+        //  Get the first token
+        record = strtok(line, ",");
 
-	//printf("Train Station #%d is %s\n",Station0.id, Station0.name);
+        while(record != NULL)
+        {
+            graph[i][j] = atoi(record);
+            //printf("%d|", graph[i][j]);       
+            // Walk through other tokens using NULL somehow?
+            record = strtok(NULL, ",");
+            j++;
+        }
+        //printf("\n");
+        j = 0;
+        i++;
+    }
+    fclose(fstream);
+    //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    
+    char *colors[Vertices][Vertices];
 
+    //   \/\/  Make Function Somehow \/\/
+    //char buffer[1024];    
+    //char *record, *line;
+    i = 0;
+    j = 0;
+    fstream = fopen("Colors.dat", "r");
 
+    // Check for successful opening of file
+    if (fstream == NULL)
+    {
+        printf("\n file opening failed\n");
+        return -1;
+    }
+    
+    // Get a single line from the file and parse it into tokens
+    // and place the contents in a 2d array of strings.
+    while ((line = fgets(buffer, sizeof(buffer), fstream)) != NULL)
+    {
+        //  Get the first token
+        record = strtok(line, ",");
 
+        while(record != NULL)
+        {
+            colors[i][j] = strdup(record);
+            //printf("%s|", colors[i][j]);      
+            // Walk through other tokens using NULL somehow?
+            record = strtok(NULL, ",");
+            j++;
+        }
+        j = 0;
+        i++;
+    }
+    fclose(fstream);
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-
-
-
-   /* Let us create the example graph discussed above */
-    int graph[Vertices][Vertices] = {{0, 4, 0, 0, 0, 0, 0, 8, 0},
-                                     {4, 0, 8, 0, 0, 0, 0, 11, 0},
-                                     {0, 8, 0, 7, 0, 4, 0, 0, 2},
-                                     {0, 0, 7, 0, 9, 14, 0, 0, 0},
-                                     {0, 0, 0, 9, 0, 10, 0, 0, 0},
-                                     {0, 0, 4, 0, 10, 0, 2, 0, 0},
-                                     {0, 0, 0, 14, 0, 2, 0, 1, 6},
-                                     {8, 11, 0, 0, 0, 0, 1, 0, 7},
-                                     {0, 0, 2, 0, 0, 0, 6, 7, 0}
-                                    };
- 
-    const char *colors[Vertices][Vertices] = {{"", "Orange", "", "", "", "", "", "Red", ""},
-                                              {"Orange", "", "Blue", "", "", "", "", "Black", ""},
-                                              {"", "Blue", "", "Pink", "", "Any", "", "", "Any"},
-                                              {"", "", "Pink", "", "Green", "Red", "", "", ""},
-                                              {"", "", "", "Green", "", "Blue", "", "", ""},
-                                              {"", "", "Any", "", "BLue", "", "Orange", "", ""},
-                                              {"", "", "", "Red", "", "Orange", "", "Green", "Black"},
-                                              {"Red", "Black", "", "", "", "", "Green", "", "Yellow"},
-                                              {"", "", "Any", "", "", "", "Black", "Yellow", ""}
-                                             };
-    printf("Color from 0 to 1 is %s\n", colors[0][1]);
-	dijkstra(colors, graph, 0);
+    dijkstra(colors, graph, 0);
     
     //printf("\nnum = %d\n", graph[0][2]); // Down 0 and over 2.
  
@@ -69,7 +113,7 @@ int main()
 
 // Funtion that implements Dijkstra's single source shortest path algorithm
 // for a graph represented using an adjacency matrix
-void dijkstra(const char *colors[Vertices][Vertices], int graph[Vertices][Vertices], int src)
+void dijkstra(char *colors[Vertices][Vertices], int graph[Vertices][Vertices], int src)
 {
     int count, v;
     int dist[Vertices];   // The output array.  dist[i] will hold the shortest
@@ -93,7 +137,7 @@ void dijkstra(const char *colors[Vertices][Vertices], int graph[Vertices][Vertic
     // Find shortest path for all vertices
     for (count = 0; count < Vertices-1; count++)
     {
-		// Pick the minimum distance vertex from the set of vertices not yet processed
+        // Pick the minimum distance vertex from the set of vertices not yet processed
         // u is always equal to src in first iteration
         int u = minDistance(dist, sptSet);
  
@@ -110,7 +154,7 @@ void dijkstra(const char *colors[Vertices][Vertices], int graph[Vertices][Vertic
         {
             dist[v] = dist[u] + graph[u][v];
             parent[v] = u;
-		}
+        }
     }
  
     printSolution(dist, Vertices, parent, src, 4, colors, graph);
@@ -135,7 +179,7 @@ int minDistance(int dist[], int sptSet[])
     return min_index;
 }
 
-void printPath(int parent[], int j, const char *colors[Vertices][Vertices], int graph[Vertices][Vertices])
+void printPath(int parent[], int j, char *colors[Vertices][Vertices], int graph[Vertices][Vertices])
 {
     // Base Case : If j is source
     if (parent[j] == -1)
@@ -146,20 +190,23 @@ void printPath(int parent[], int j, const char *colors[Vertices][Vertices], int 
     printf("Colors are %d %s\n", graph[j][parent[j]], colors[j][parent[j]]);
 }
  
-int printSolution(int dist[], int n, int parent[], int src, int dest, const char *colors[Vertices][Vertices], int graph[Vertices][Vertices])
+void printSolution(int dist[], int n, int parent[], int src, int dest, char *colors[Vertices][Vertices], int graph[Vertices][Vertices])
 {
     int i;
     
     printf("Vertex   Distance from Source   Path\n");
-    //printf("\n%d -> %d \t\t %d\t\t%d ", src, dest, dist[dest], src);
+    printf("The total distance from station %d to station %d is %d", src, dest, dist[dest]);
     //printPath(parent, dest, colors);
 
-    for (i = 0; i < Vertices; i++)
-    {
-        printf("\n%d -> %d \t\t %d\t\t%d ", src, i, dist[i], src);
-        //printPath(parent, i);
-    }
+//    for (i = 0; i < Vertices; i++)
+//    {
+//        printf("\n%d -> %d \t\t %d\t\t%d ", src, i, dist[i], src);
+//        //printPath(parent, i);
+//    }
     printf("\n\n");
-	printPath(parent, dest, colors, graph);
+    printPath(parent, dest, colors, graph);
+    
+    return;
 }
+
  
