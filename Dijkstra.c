@@ -6,28 +6,36 @@
 // Number of VERTICES in the graph
 #define VERTICES 36
 
-// Function Prototypes
-void dijkstra(char *colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES], int src);
-int minDistance(int dist[], int sptSet[]);
-void printPath(int parent[], int j, char *colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES]);
-void printSolution(int dist[], int parent[], int src, int dest, char *colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES]);
-void parseWeights(int graph[VERTICES][VERTICES]);
-void parseColors(char *colors[VERTICES][VERTICES]);
-
+// Structure to hold station names and id's
 struct Stations
 {
     int id;
     char name[50];
 };
 
+// Function Prototypes
+void dijkstra(char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES], int src);
+int minDistance(int dist[], int sptSet[]);
+void printPath(int parent[], int j, char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES]);
+void printSolution(int dist[], int parent[], int src, int dest, char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES]);
+void parseWeights(int graph[VERTICES][VERTICES]);
+void parseColors(char *colors[VERTICES][VERTICES]);
+void parseStations(struct Stations stations[VERTICES]);
+
 int main()
 {
+    // Parse the weights .csv file into a 2d array
     int graph[VERTICES][VERTICES];
     parseWeights(graph);
     
-    char *colors[VERTICES][VERTICES];
+    // Parse the colors .csv file into a 2d array of strings
+    char* colors[VERTICES][VERTICES];
     parseColors(colors);
 
+    // Parse the stations.csv file into an array of structures
+    struct Stations stations[VERTICES];
+    parseStations(stations);
+    
     dijkstra(colors, graph, 1);
     
     //printf("\nnum = %d\n", graph[0][2]); // Down 0 and over 2.
@@ -37,7 +45,7 @@ int main()
 
 // Funtion that implements Dijkstra's single source shortest path algorithm
 // for a graph represented using an adjacency matrix
-void dijkstra(char *colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES], int src)
+void dijkstra(char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES], int src)
 {
     int count, v;
     int dist[VERTICES];   // The output array.  dist[i] will hold the shortest
@@ -103,7 +111,7 @@ int minDistance(int dist[], int sptSet[])
     return min_index;
 }
 
-void printPath(int parent[], int j, char *colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES])
+void printPath(int parent[], int j, char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES])
 {
     // Base Case : If j is source
     if (parent[j] == -1)
@@ -114,7 +122,7 @@ void printPath(int parent[], int j, char *colors[VERTICES][VERTICES], int graph[
     printf("\t%d %s\n", graph[j][parent[j]], colors[j][parent[j]]);
 }
  
-void printSolution(int dist[], int parent[], int src, int dest, char *colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES])
+void printSolution(int dist[], int parent[], int src, int dest, char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES])
 {
     int i;
     
@@ -172,13 +180,13 @@ void parseWeights(int graph[VERTICES][VERTICES])
     return;
 }
 
-void parseColors(char *colors[VERTICES][VERTICES])
+// Utility function to parse the .csv file containing the colors of the edges
+void parseColors(char* colors[VERTICES][VERTICES])
 {
     char buffer[1024];    
     char *record, *line;
-    int i, j;
-    i = 0;
-    j = 0;
+    int i = 0;
+    int j = 0;
     FILE *fstream = fopen("US_Colors.csv", "r");
 
     // Check for successful opening of file
@@ -204,6 +212,39 @@ void parseColors(char *colors[VERTICES][VERTICES])
             j++;
         }
         j = 0;
+        i++;
+    }
+    fclose(fstream);
+    return;
+}
+
+// Utility function to parse the .csv file containing the station names and id's
+void parseStations(struct Stations stations[VERTICES])
+{
+    char buffer[1024];    
+    char *record, *line;
+    int i = 0;
+    FILE *fstream = fopen("US_Station_Names.csv", "r");
+
+    // Check for successful opening of file
+    if (fstream == NULL)
+    {
+        printf("\n Opening US_Station_Names.csv failed.\n");
+        exit(3);
+    }
+    
+    // Get a single line from the file and parse it into tokens
+    // and place the contents in a 2d array of strings.
+    while ((line = fgets(buffer, sizeof(buffer), fstream)) != NULL)
+    {
+        // Get the first token which is the id
+        record = strtok(line, ",");
+        stations[i].id = atoi(record);
+        
+        // Get the second token which is the name
+        record = strtok(NULL, ",");
+        strcpy(stations[i].name, record);
+        
         i++;
     }
     fclose(fstream);
