@@ -10,7 +10,7 @@ In order to run the program simply clone the repository to your system and compi
 
   `gcc Dijkstra.c`
   
-The program will use `US_Colors.csv`, `US_Stations_Names.csv`, and `US_Weights.csv`.  Make sure to keep these in the same directory as the executable (or change the paths to them in the source code if you choose to move them).
+The program will use `US_Colors.csv`, `US_Station_Names.csv`, and `US_Weights.csv`.  Make sure to keep these in the same directory as the executable (or change the paths to them in the source code if you choose to move them).
 
 ###Adding New Boards.
 
