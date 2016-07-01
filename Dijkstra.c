@@ -141,14 +141,15 @@ void dijkstra(char* colors[VERTICES][VERTICES], int graph[VERTICES][VERTICES], i
  
         // Update dist value of the adjacent vertices of the picked vertex
         for (v = 0; v < VERTICES; v++)
- 
-        // Update dist[v] only if is not in shortest, there is an edge from 
-        // u to v, and total weight of path from source to  v through u is 
-        // smaller than current value of dist[v]
-        if (!shortest[v] && graph[u][v] && dist[u] != INT_MAX && ((dist[u] + graph[u][v]) < dist[v]))
         {
-            dist[v] = dist[u] + graph[u][v];
-            path[v] = u;
+            // Update dist[v] only if is not in shortest, there is an edge from 
+            // u to v, and total weight of path from source to  v through u is 
+            // smaller than current value of dist[v]
+            if (!shortest[v] && graph[u][v] && dist[u] != INT_MAX && ((dist[u] + graph[u][v]) < dist[v]))
+            {
+                dist[v] = dist[u] + graph[u][v];
+                path[v] = u;
+            }
         }
     }
 }
