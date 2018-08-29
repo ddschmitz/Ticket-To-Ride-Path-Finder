@@ -4,7 +4,7 @@ As a project for my Algorithms class, I decided to make a program that would fin
 
 Here is what the [United States](https://cf.geekdo-images.com/images/pic38674.jpg) board game looks like.
 
-###Compiling and Running.
+### Compiling and Running.
 
 In order to run the program simply clone the repository to your system and compile the source code.
 
@@ -12,7 +12,7 @@ In order to run the program simply clone the repository to your system and compi
   
 The program will use `US_Colors.csv`, `US_Station_Names.csv`, and `US_Weights.csv`.  Make sure to keep these in the same directory as the executable (or change the paths to them in the source code if you choose to move them).
 
-###Adding New Boards.
+### Adding New Boards.
 
 Ticket To Ride has expansions that include other boards to play on.  If you want to create new `.csv` files of these boards, I included in the repository the Excel spreadsheet used to make the United States `.csv` files.  When I created the files for the United States board I listed the stations in alphabetical order and that is also how they are represented in the Weights and Colors `.csv`.  Make sure to keep these consistent. 
 
